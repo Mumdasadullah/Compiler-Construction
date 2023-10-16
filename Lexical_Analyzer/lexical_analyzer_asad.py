@@ -21,6 +21,8 @@ KeyWord = {
     "cin": "cin",
     "cout": "cout",
     "new": "new",
+    "true": "true",
+    "false": "false",
     "main": "main"
 }
 
@@ -242,6 +244,8 @@ def token():
                         #print(i)
                     if(i == len(line)-1):
                         #print("ASAD")
+                        sp.append(temp)
+                        temp = ''
                         temp+=line[i]
                     #temp += line[i]
                     sp.append(temp)
@@ -516,15 +520,20 @@ def token():
                 else:
                     sp.append(temp)
                     temp = ''
-                    if(line[j] == line[i]):
+                    if(i == len(line) - 1):
                         temp += line[i]
-                        temp += line[j]
-                        i = i + 1
                         sp.append(temp)
                         temp = ''
                     else:
-                        sp.append(line[i])
-                        temp = ''
+                        if(line[j] == line[i]):
+                            temp += line[i]
+                            temp += line[j]
+                            i = i + 1
+                            sp.append(temp)
+                            temp = ''
+                        else:
+                            sp.append(line[i])
+                            temp = ''
             elif (line[i] == '&' or line[i] == '|'):
                 j = i + 1
                 if(temp==''):
@@ -629,10 +638,9 @@ def token():
                     Tobj.value = j
                     Tobj.lineNumber = t + 1
                     Tokens.append(Tobj)
-            elif((j[0] >= '0' and j[0] <= '9') or
-                 (j[0] == '-' and j[1] >= '0' and j[1] <= '9') or
-                 (j[0] == '+' and j[1] >= '0' and j[1] <= '9')):
+            elif(j[0] >= '0' and j[0] <= '9'):
                 if(isIntConstant(j)):
+                    #(j[0] == '+' and j[1] >= '0' and j[1] <= '9')
                     Tobj.className = "Int Const"
                     Tobj.value = j
                     Tobj.lineNumber = t + 1
@@ -648,6 +656,38 @@ def token():
                     Tobj.value = j
                     Tobj.lineNumber = t + 1
                     Tokens.append(Tobj)
+            elif ((j[0] == '+' and len(j) > 1) or (j[0] == '-' and len(j) > 1)):
+                #print("ASAD")
+                if(j[1] >= '0' and j[1] <= '9'):
+                    if(isIntConstant(j)):
+                        #(j[0] == '+' and j[1] >= '0' and j[1] <= '9')
+                        Tobj.className = "Int Const"
+                        Tobj.value = j
+                        Tobj.lineNumber = t + 1
+                        Tokens.append(Tobj)
+                    elif(isFloatConstant(j)):
+                        Tobj.className = "Float Const"
+                        Tobj.value = j
+                        Tobj.lineNumber = t + 1
+                        Tokens.append(Tobj)
+                    else:
+                        #print("ASAD")
+                        Tobj.className = "Invalid Lexeme"
+                        Tobj.value = j
+                        Tobj.lineNumber = t + 1
+                        Tokens.append(Tobj)
+                else:
+                    CP = isOperator(j)
+                    if(CP == None):
+                        Tobj.className = "Invalid Lexeme"
+                        Tobj.value = j
+                        Tobj.lineNumber = t + 1
+                        Tokens.append(Tobj)
+                    else:
+                        Tobj.className = CP
+                        Tobj.value = j
+                        Tobj.lineNumber = t + 1
+                        Tokens.append(Tobj)
             elif (j[0] == '.'):
                 if(j == '.'):
                     Tobj.className = "."
@@ -818,7 +858,7 @@ def write_in_file(tk,asad_file):
         for token in tk:
             #print(token.className," ",token.value," ",token.lineNumber)
             file.write(f"{token.className}, {token.value}, Line: {token.lineNumber}\n")
-        file.write(f"$, ,{token.lineNumber + 1}")
+        file.write(f"$, , Line: {token.lineNumber + 1}")
 
 #isKeyWord(user_input)
 #isOperator(user_input)
