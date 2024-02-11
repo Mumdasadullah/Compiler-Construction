@@ -1,0 +1,22 @@
+class saif
+{
+	int func()
+	{
+		return 45;
+	}
+};
+
+class asad
+{
+	public:
+		int y;
+};
+
+saif arr[5];
+
+int main () {
+	saif sf;
+	int ty;
+	ty = sf.func();
+	return 0;
+}
